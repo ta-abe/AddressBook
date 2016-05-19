@@ -3,7 +3,7 @@ package address_book;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Addressa {
+public class Address {
 	private String uuid = null;
 	private String name = null;
 	private String kana = null;
@@ -32,8 +32,6 @@ public class Addressa {
 		this.memo = memo;
 		this.mailAddressList = mailAddressList;
 		this.phoneNumberList = phoneNumberList;
-
-
 	}
 
 	public String getUuid(){
@@ -64,8 +62,3 @@ public class Addressa {
 		return memo;
 	}
 }
-
-
-
-
-
