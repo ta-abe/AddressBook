@@ -177,21 +177,20 @@ public class AddressBook {
 	}
 
 	public void update(Address address){
-
 	}
 
 	public void delete(String uuid) throws SQLException, ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-		String sql = "DELETE FROM ? WHERE UUID = ?";
+		String sql = "DELETE FROM ? WHERE ? = ?";  //テーブルの変更にはPrepareStatementは使えない？
 		PreparedStatement pst = conn.prepareStatement(sql);
-		pst.setString(1, "ADDRESS_BOOK");
+		pst.setString(1, "UUID");
 		pst.setString(2, uuid);
 		pst.executeUpdate();
 		pst.setString(1, "MAIL_ADDRESS");
+		pst.setString(2, "BOOK_UUID");
 		pst.executeUpdate();
 		pst.setString(1, "PHONE_NUMBER");
 		pst.executeUpdate();
-
 	}
  }

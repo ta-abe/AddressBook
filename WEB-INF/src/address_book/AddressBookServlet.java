@@ -118,10 +118,15 @@ public class AddressBookServlet extends HttpServlet{
 			}
 			else if(null != req.getParameter("btnEdit"))
 			{
+				String uuid = req.getParameter("hidUuid");
+				req.setAttribute("UUID", uuid);
+
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR004.jsp").forward(req, res);
 			}
 			else if(null != req.getParameter("btnDelete"))
 			{
+				String uuid = req.getParameter("hidUuid");
+				deleteAddress(uuid);
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
 			}
 			else if(null != req.getParameter("btnUpdate"))
@@ -130,9 +135,30 @@ public class AddressBookServlet extends HttpServlet{
 			}
 			else if("003Back".equals(req.getParameter("btnBack")))
 			{
+				String uuid = req.getParameter("hidUuid");
+				AddressBook addressbook = new AddressBook();
+				Address address = addressbook.get(uuid);
+				req.setAttribute("UUID", uuid);
+				req.setAttribute("NAME", address.getName());
+				req.setAttribute("KANA", address.getKana());
+				req.setAttribute("ADDRESS", address.getAddress());
+				req.setAttribute("MEMO", address.getMemo());
+				int i = 0;
+				List<String> mail = address.getMailAddressList();
+				req.setAttribute("mailsize", mail.size());
+				for(String s:mail){
+					req.setAttribute("MAIL" + i, s);
+					i++;
+				}
+				i = 0;
+				List<String> phone = address.getPhoneNumber();
+				req.setAttribute("phonesize", phone.size());
+				for(String s : phone){
+					req.setAttribute("PHONE" + i, s);
+					i++;
+				}
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR003.jsp").forward(req, res);
 			}
-
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -144,6 +170,12 @@ public class AddressBookServlet extends HttpServlet{
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 
@@ -170,8 +202,9 @@ public class AddressBookServlet extends HttpServlet{
 
 	}
 
-	private void deleteAddress(){
-
+	private void deleteAddress(String uuid) throws ClassNotFoundException, SQLException{
+		AddressBook addressbook = new AddressBook();
+		addressbook.delete(uuid);
 	}
 
 }

@@ -12,7 +12,6 @@ public class Address {
 	private String address = null;
 	private String memo = null;
 
-
 	Address(String uuid, String name, String kana, String address, String memo, List<String> mailAddressList, List<String> phoneNumberList){
 		this.uuid = uuid;
 		this.name = name;
