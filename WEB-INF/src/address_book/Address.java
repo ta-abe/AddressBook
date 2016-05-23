@@ -49,7 +49,7 @@ public class Address {
 		return mailAddressList;
 	}
 
-	public List<String> getPhoneNumber(){
+	public List<String> getPhoneNumberList(){
 		return phoneNumberList;
 	}
 

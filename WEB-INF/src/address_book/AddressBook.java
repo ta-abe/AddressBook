@@ -77,7 +77,7 @@ public class AddressBook {
 		String sql = "SELECT * FROM ADDRESS_BOOK LEFT JOIN MAIL_ADDRESS ON ADDRESS_BOOK.UUID = MAIL_ADDRESS.BOOK_UUID LEFT JOIN PHONE_NUMBER ON ADDRESS_BOOK.UUID =  PHONE_NUMBER.BOOK_UUID HAVING MAIL_ADDRESS.SORT_ORDER = 1  AND PHONE_NUMBER.SORT_ORDER = 1 ORDER BY ADDRESS_BOOK.REGISTERED_DATETIME DESC";
 		PreparedStatement pst = conn.prepareStatement(sql);
 		ResultSet rs = pst.executeQuery();
-		return 	ToList(conn, rs);
+		return ToList(conn, rs);
 	}
 
 	private List<String> getMailAddressList(Connection conn, ResultSet rs) throws SQLException{
@@ -108,34 +108,23 @@ public class AddressBook {
 		return phoneNumberList;
 	}
 
-	public Address get(String uuid){
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-			String sql = "SELECT * FROM ADDRESS_BOOK WHERE UUID = ?";
-			PreparedStatement pst = conn.prepareStatement(sql);
-			pst.setString(1, uuid);
-			ResultSet rs = pst.executeQuery();
-			List<String> mailAddressList = getMailAddressList(conn, rs);
-			rs.beforeFirst();
-			List<String> phoneNumberList = getPhoneNumberList(conn, rs);
-			rs.absolute(1);
-			NAME = rs.getString("NAME");
-			KANA = rs.getString("KANA");
-			ADDRESS = rs.getString("ADDRESS");
-			MEMO = rs.getString("MEMO");
-			Address address = new Address(uuid, NAME, KANA, ADDRESS, MEMO, mailAddressList, phoneNumberList);
-			return address;
-		}
-		catch (ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		return null;
+	public Address get(String uuid) throws ClassNotFoundException, SQLException{
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+		String sql = "SELECT * FROM ADDRESS_BOOK WHERE UUID = ?";
+		PreparedStatement pst = conn.prepareStatement(sql);
+		pst.setString(1, uuid);
+		ResultSet rs = pst.executeQuery();
+		List<String> mailAddressList = getMailAddressList(conn, rs);
+		rs.beforeFirst();
+		List<String> phoneNumberList = getPhoneNumberList(conn, rs);
+		rs.absolute(1);
+		NAME = rs.getString("NAME");
+		KANA = rs.getString("KANA");
+		ADDRESS = rs.getString("ADDRESS");
+		MEMO = rs.getString("MEMO");
+		Address address = new Address(uuid, NAME, KANA, ADDRESS, MEMO, mailAddressList, phoneNumberList);
+		return address;
 	}
 
 	public Address add(Address address) throws ClassNotFoundException, SQLException{
@@ -163,7 +152,7 @@ public class AddressBook {
 		}
 		String sql3 = "INSERT INTO PHONE_NUMBER(UUID, BOOK_UUID, SORT_ORDER, PHONE_NUMBER, REGISTERED_DATETIME) VALUES(?, ?, ?, ?, CAST(NOW() AS DATETIME))";
 		PreparedStatement pst3 = conn.prepareStatement(sql3);
-		List <String> array2 = address.getPhoneNumber();
+		List <String> array2 = address.getPhoneNumberList();
 		PN_BOOK_UUID = UUID;
 		for(int i = 0 ; i< array2.size(); i ++){
 			PN_UUID = java.util.UUID.randomUUID().toString();
@@ -176,21 +165,100 @@ public class AddressBook {
 		return null;
 	}
 
-	public void update(Address address){
+	public void update(Address address) throws ClassNotFoundException, SQLException{
+		String uuid = address.getUuid();
+		String name = address.getName();
+		String kana = address.getKana();
+		String ad = address.getAddress();
+		String memo = address.getMemo();
+		List<String> mail = address.getMailAddressList();
+		List<String> phone = address.getPhoneNumberList();
+
+		Class.forName("com.mysql.jdbc.Driver");
+		Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
+		String sql = "UPDATE ADDRESS_BOOK SET NAME = ?, KANA = ?, ADDRESS = ?, MEMO = ?, UPDATED_DATETIME = CAST(NOW() AS DATETIME)  WHERE UUID = ?";
+		PreparedStatement pst = conn.prepareStatement(sql);
+		pst.setString(1, name);
+		pst.setString(2, kana);
+		pst.setString(3, ad);
+		pst.setString(4, memo);
+		pst.setString(5, uuid);
+		pst.executeUpdate();
+
+		String sql2 = "SELECT * FROM MAIL_ADDRESS WHERE BOOK_UUID = ? ORDER BY SORT_ORDER ASC";
+		PreparedStatement pst2 = conn.prepareStatement(sql2);
+		pst2.setString(1, uuid);
+		ResultSet rs = pst2.executeQuery();
+		List<String> mauuidlist = new ArrayList<String>();
+		while(rs.next()){
+			mauuidlist.add(rs.getString("UUID"));
+		}
+
+		String sql3 = "UPDATE MAIL_ADDRESS SET MAIL_ADDRESS = ?, UPDATED_DATETIME = CAST(NOW() AS DATETIME) where UUID = ?";
+		PreparedStatement pst3 = conn.prepareStatement(sql3);
+		for(int i = 0 ; i < mauuidlist.size() ; i++){
+			pst3.setString(1,mail.get(i));
+			pst3.setString(2, mauuidlist.get(i));
+			pst3.executeUpdate();
+		}
+		int mailsize = mail.size();
+		if(false == "null".equals(mail.get(mailsize - 1))){
+			String sql4 = "INSERT INTO MAIL_ADDRESS(UUID, BOOK_UUID, SORT_ORDER, MAIL_ADDRESS, REGISTERED_DATETIME) VALUES(?, ?, ?, ?, CAST(NOW() AS DATETIME))";
+			PreparedStatement pst4 = conn.prepareStatement(sql4);
+			String newuuid =  java.util.UUID.randomUUID().toString();
+			pst4.setString(1, newuuid);
+			pst4.setString(2, uuid);
+			pst4.setInt(3, mailsize);
+			pst4.setString(4, mail.get(mailsize - 1));
+			pst4.executeUpdate();
+		}
+
+
+		String sql5 = "SELECT * FROM PHONE_NUMBER WHERE BOOK_UUID = ? ORDER BY SORT_ORDER ASC";
+		PreparedStatement pst5 = conn.prepareStatement(sql5);
+		pst5.setString(1, uuid);
+		ResultSet rs2 = pst5.executeQuery();
+		List<String> phuuidlist = new ArrayList<String>();
+		while(rs2.next()){
+			phuuidlist.add(rs2.getString("UUID"));
+		}
+
+		String sql6 = "UPDATE PHONE_NUMBER SET PHONE_NUMBER = ?, UPDATED_DATETIME = CAST(NOW() AS DATETIME) where UUID = ?";
+		PreparedStatement pst6 = conn.prepareStatement(sql6);
+		for(int i = 0 ; i < phuuidlist.size() ; i++){
+			pst6.setString(1,phone.get(i));
+			pst6.setString(2, phuuidlist.get(i));
+			pst6.executeUpdate();
+		}
+		int phonesize = phone.size();
+		if(false == "null".equals(phone.get(phonesize - 1))){
+			String sql7 = "INSERT INTO PHONE_NUMBER(UUID, BOOK_UUID, SORT_ORDER, PHONE_NUMBER, REGISTERED_DATETIME) VALUES(?, ?, ?, ?, CAST(NOW() AS DATETIME))";
+			PreparedStatement pst7 = conn.prepareStatement(sql7);
+			String newuuid =  java.util.UUID.randomUUID().toString();
+			pst7.setString(1, newuuid);
+			pst7.setString(2, uuid);
+			pst7.setInt(3, phonesize);
+			pst7.setString(4, phone.get(phonesize - 1));
+			pst7.executeUpdate();
+		}
 	}
 
 	public void delete(String uuid) throws SQLException, ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 		Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-		String sql = "DELETE FROM ? WHERE ? = ?";  //テーブルの変更にはPrepareStatementは使えない？
+		String sql = "DELETE FROM ADDRESS_BOOK WHERE UUID = ?";
 		PreparedStatement pst = conn.prepareStatement(sql);
-		pst.setString(1, "UUID");
-		pst.setString(2, uuid);
+		pst.setString(1, uuid);
 		pst.executeUpdate();
-		pst.setString(1, "MAIL_ADDRESS");
-		pst.setString(2, "BOOK_UUID");
-		pst.executeUpdate();
-		pst.setString(1, "PHONE_NUMBER");
-		pst.executeUpdate();
+
+		String sql2 = "DELETE FROM MAIL_ADDRESS WHERE BOOK_UUID = ?";
+		PreparedStatement pst2 = conn.prepareStatement(sql2);
+		pst2.setString(1, uuid);
+		pst2.executeUpdate();
+
+		String sql3 = "DELETE FROM PHONE_NUMBER WHERE BOOK_UUID = ?";
+		PreparedStatement pst3 = conn.prepareStatement(sql3);
+		pst3.setString(1, uuid);
+		pst3.executeUpdate();
 	}
  }
