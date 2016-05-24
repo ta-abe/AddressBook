@@ -33,13 +33,9 @@ public class AddressBookServlet extends HttpServlet{
 				req.setAttribute("PHONE_NUMBER" + i, a.getPhoneNumberList().get(i));
 				i++;
 			}
-			getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req , res);
+			getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
 		}
 		catch (UnsupportedEncodingException e)
-		{
-			e.printStackTrace();
-		}
-		catch (ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
@@ -207,30 +203,23 @@ public class AddressBookServlet extends HttpServlet{
 		{
 			e.printStackTrace();
 		}
-		catch (ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-
 	}
 
-	private void registerAddress(String name, String kana, List<String> mailAddressList, List<String> phoneNumberList, String address, String memo) throws ClassNotFoundException, SQLException{
+	private void registerAddress(String name, String kana, List<String> mailAddressList, List<String> phoneNumberList, String address, String memo)throws SQLException{
 		Address address2 = new Address(name, kana, address, memo, mailAddressList, phoneNumberList);
 		AddressBook addressbook = new AddressBook();
 		addressbook.add(address2);
-
 	}
 
-	private void updateAddress(Address address) throws ClassNotFoundException, SQLException{
+	private void updateAddress(Address address) throws SQLException{
 		AddressBook addressbook = new AddressBook();
 		addressbook.update(address);
 		}
-
-	private void deleteAddress(String uuid) throws ClassNotFoundException, SQLException{
+	private void deleteAddress(String uuid) throws SQLException{
 		AddressBook addressbook = new AddressBook();
 		addressbook.delete(uuid);
 	}

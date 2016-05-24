@@ -20,7 +20,6 @@ public class Address {
 		this.memo = memo;
 		this.mailAddressList = mailAddressList;
 		this.phoneNumberList = phoneNumberList;
-
 	}
 
 	Address(String name, String kana,String address,String memo,List<String> mailAddressList,List<String> phoneNumberList){

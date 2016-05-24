@@ -1,4 +1,4 @@
-<%@ page contentType= "text/html;charset=UTF-8"%>
+<%@ page contentType = "text/html;charset=UTF-8"%>
 
 <html>
   <head>
@@ -15,8 +15,8 @@
       String s;
       s = size.toString();
       int j = Integer.parseInt(s);%>
-      <form method ="POST" action="AddressBookServlet">
-        <button type="submit" value="新規登録"  name ="btnAdd">新規登録</button><br><br>
+      <form method = "POST" action = "AddressBookServlet">
+        <button type = "submit" value = "新規登録"  name = "btnAdd">新規登録</button><br><br>
       </form>
       <table border = "1" width = "800">
         <tr>
@@ -28,13 +28,13 @@
         </tr>
         <%for(int i= 0 ; i < j ; i++){%>
           <tr>
-            <form method = "POST" action ="AddressBookServlet">
+            <form method = "POST" action = "AddressBookServlet">
               <th><label value = "<%=request.getAttribute("NAME" + i)%>" name = "lblName"><%=request.getAttribute("NAME" + i)%></label></th>
               <th><label value = "<%=request.getAttribute("KANA" + i)%>" name = "lblKana"><%=request.getAttribute("KANA" + i)%></label></th>
               <th><label value = "<%=request.getAttribute("MAIL_ADDRESS" + i)%>" name = "lblMailAddress"><%=request.getAttribute("MAIL_ADDRESS" + i)%></label></th>
               <th><label value = "<%=request.getAttribute("PHONE_NUMBER" + i)%>" name = "lblPhoneNumber"><%=request.getAttribute("PHONE_NUMBER" + i)%></label></th>
-              <th><button type ="submit" value ="参照" name ="btnRefer">参照</button>
-              <input type="hidden" value="<%=request.getAttribute("UUID" + i) %>" name ="hidUuid"></th>
+              <th><button type = "submit" value = "参照" name = "btnRefer">参照</button>
+              <input type = "hidden" value = "<%=request.getAttribute("UUID" + i) %>" name = "hidUuid"></th>
             </form>
           </tr>
         <%} %>
