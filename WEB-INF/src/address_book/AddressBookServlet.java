@@ -13,27 +13,54 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AddressBookServlet extends HttpServlet{
 
-	@SuppressWarnings("unused")
 	private long selialVersionUID;
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res){
 		try {
-			req.setCharacterEncoding("UTF-8");
-			AddressBook addressbook = new AddressBook();
-			List<Address> array = addressbook.getAll();
-			Integer s = array.size();
-			req.setAttribute("size", s);
-			int i = 0;
-			for(Address a: array){
-				req.setAttribute("UUID" + i, a.getUuid());
-				req.setAttribute("NAME" + i, a.getName());
-				req.setAttribute("KANA" + i, a.getKana());
-				req.setAttribute("MEMO" + i, a.getMemo());
-				req.setAttribute("MAIL_ADDRESS" + i, a.getMailAddressList().get(i));
-				req.setAttribute("PHONE_NUMBER" + i, a.getPhoneNumberList().get(i));
-				i++;
+			if("003Back".equals(req.getParameter("btnBack"))){  //ADR004からADR003へ遷移
+				String uuid = req.getParameter("hidUuid");
+				AddressBook addressbook = new AddressBook();
+				Address address = addressbook.get(uuid);
+				req.setAttribute("UUID", uuid);
+				req.setAttribute("NAME", address.getName());
+				req.setAttribute("KANA", address.getKana());
+				req.setAttribute("ADDRESS", address.getAddress());
+				req.setAttribute("MEMO", address.getMemo());
+				int i = 0;
+				List<String> mail = address.getMailAddressList();
+				req.setAttribute("mailsize", mail.size());
+				for(String s:mail){
+					req.setAttribute("MAIL" + i, s);
+					i++;
+				}
+				i = 0;
+				List<String> phone = address.getPhoneNumberList();
+				req.setAttribute("phonesize", phone.size());
+				for(String s : phone){
+					req.setAttribute("PHONE" + i, s);
+					i++;
+				}
+				getServletConfig().getServletContext().getRequestDispatcher("/ADR003.jsp").forward(req, res);
 			}
-			getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
+			else
+			{
+				req.setCharacterEncoding("UTF-8");
+				AddressBook addressbook = new AddressBook();
+				List<Address> array = addressbook.getAll();
+				Integer s = array.size();
+				req.setAttribute("size", s);
+				int i = 0;
+				for(Address a: array){
+					req.setAttribute("UUID" + i, a.getUuid());
+					req.setAttribute("NAME" + i, a.getName());
+					req.setAttribute("KANA" + i, a.getKana());
+					req.setAttribute("MEMO" + i, a.getMemo());
+					req.setAttribute("MAIL_ADDRESS" + i, a.getMailAddressList().get(i));
+					req.setAttribute("PHONE_NUMBER" + i, a.getPhoneNumberList().get(i));
+					i++;
+				}
+				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
+			}
 		}
 		catch (UnsupportedEncodingException e)
 		{
@@ -56,10 +83,31 @@ public class AddressBookServlet extends HttpServlet{
 	public void doPost(HttpServletRequest req, HttpServletResponse res){
 		try {
 			req.setCharacterEncoding("UTF-8");
-			if(null != req.getParameter("btnAdd")){
+			if(null != req.getParameter("btnAdd")){ //登録画面へ
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR002.jsp").forward(req, res);
 			}
-			else if(null != req.getParameter("btnRefer"))
+			else if(null != req.getParameter("btnRegister")) //新規登録
+			{
+				List<String> mailAddressList = new ArrayList<String>();
+				List<String> phoneNumberList = new ArrayList<String>();
+				String name = req.getParameter("txtName");
+				String kana = req.getParameter("txtKana");
+				String address = req.getParameter("txtAddress");
+				String memo = req.getParameter("txtMemo");
+				String s = null;
+				String t = null;
+				for(int i = 1; i <= 3 ;i++){
+					if("" != (s = req.getParameter("txtMailAddress" + i))){
+						mailAddressList.add(s);
+					}
+					if("" != (t = req.getParameter("txtPhoneNumber" + i))){
+						phoneNumberList.add(t);
+					}
+				}
+				registerAddress(name, kana, mailAddressList, phoneNumberList, address, memo);
+				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
+			}
+			else if(null != req.getParameter("btnRefer")) //参照（ADR003へ）
 			{
 				String uuid = req.getParameter("hidUuid");
 				AddressBook addressbook = new AddressBook();
@@ -85,30 +133,13 @@ public class AddressBookServlet extends HttpServlet{
 				}
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR003.jsp").forward(req, res);
 			}
-			else if(null != req.getParameter("btnRegister"))
+			else if(null != req.getParameter("btnDelete"))  //削除
 			{
-				List<String> mailAddressList = new ArrayList<String>();
-				List<String> phoneNumberList = new ArrayList<String>();
-				String name = req.getParameter("txtName");
-				String kana = req.getParameter("txtKana");
-				String address = req.getParameter("txtAddress");
-				String memo = req.getParameter("txtMemo");
-				int i = 1;
-				String s = null;
-				String t = null;
-				while(null != (s = req.getParameter("txtMailAddress" + i))){
-					mailAddressList.add(s);
-					i++;
-				}
-				i = 1;
-				while(null != (t = req.getParameter("txtPhoneNumber" + i))){
-					phoneNumberList.add(t);
-					i++;
-				}
-				registerAddress(name, kana, mailAddressList, phoneNumberList, address, memo);
+				String uuid = req.getParameter("hidUuid");
+				deleteAddress(uuid);
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
 			}
-			else if(null != req.getParameter("btnEdit"))
+			else if(null != req.getParameter("btnEdit"))  //更新画面へ
 			{
 				String uuid = req.getParameter("hidUuid");
 				req.setAttribute("UUID", uuid);
@@ -134,13 +165,7 @@ public class AddressBookServlet extends HttpServlet{
 				}
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR004.jsp").forward(req, res);
 			}
-			else if(null != req.getParameter("btnDelete"))
-			{
-				String uuid = req.getParameter("hidUuid");
-				deleteAddress(uuid);
-				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
-			}
-			else if(null != req.getParameter("btnUpdate"))
+			else if(null != req.getParameter("btnUpdate"))  //更新
 			{
 				String uuid = req.getParameter("hidUuid");
 				List<String> mail = new ArrayList<String>();
@@ -163,32 +188,6 @@ public class AddressBookServlet extends HttpServlet{
 				Address uaddress = new Address(uuid, name, kana, address, memo, mail, phone);
 				updateAddress(uaddress);
 				getServletConfig().getServletContext().getRequestDispatcher("/ADR001.jsp").forward(req, res);
-			}
-			else if("003Back".equals(req.getParameter("btnBack")))
-			{
-				String uuid = req.getParameter("hidUuid");
-				AddressBook addressbook = new AddressBook();
-				Address address = addressbook.get(uuid);
-				req.setAttribute("UUID", uuid);
-				req.setAttribute("NAME", address.getName());
-				req.setAttribute("KANA", address.getKana());
-				req.setAttribute("ADDRESS", address.getAddress());
-				req.setAttribute("MEMO", address.getMemo());
-				int i = 0;
-				List<String> mail = address.getMailAddressList();
-				req.setAttribute("mailsize", mail.size());
-				for(String s:mail){
-					req.setAttribute("MAIL" + i, s);
-					i++;
-				}
-				i = 0;
-				List<String> phone = address.getPhoneNumberList();
-				req.setAttribute("phonesize", phone.size());
-				for(String s : phone){
-					req.setAttribute("PHONE" + i, s);
-					i++;
-				}
-				getServletConfig().getServletContext().getRequestDispatcher("/ADR003.jsp").forward(req, res);
 			}
 		}
 		catch (UnsupportedEncodingException e)

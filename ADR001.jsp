@@ -7,9 +7,7 @@
     </title>
   </head>
   <body>
-    <h1>
-      アドレス一覧
-    </h1>
+    <BR><BR>
     <% Object size = request.getAttribute("size");
     if(size != null){
       String s;

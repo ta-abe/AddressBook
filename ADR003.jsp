@@ -8,7 +8,6 @@
   <body>
     <form method = "POST" action = "AddressBookServlet">
       <input type = "hidden" value = "<%=request.getAttribute("UUID")%>" name = "hidUuid">
-      ADR003<BR>
       氏名
       <label name = "lblName" style = "position : absolute ; left : 120px;"><%=request.getAttribute("NAME")%></label><BR><BR>
       かな
@@ -28,10 +27,10 @@
       住所
       <label name = "lblAddress" style = "position : absolute ; left : 120px;"><%=request.getAttribute("ADDRESS")%></label><BR><BR>
       メモ
-      <label style = "position : absolute ; left : 120px;"><%=request.getAttribute("MEMO")%></label><BR><BR><BR>
-      <button type = "submit" value = "btnEdit" name = "btnEdit">修正</button>
-      <button type = "button" name = "btnBack" onclick = "location.href = 'http://localhost:8080/address_book/ADR001.jsp'">戻る</button>
-      <button type = "submit" value = "btndelete" name = "btnDelete">削除</button>
+      <label name = "lblMemo" style = "position : absolute ; left : 120px;"><%=request.getAttribute("MEMO")%></label><BR><BR><BR>
+      <button type = "submit" value = "btnEdit" name = "btnEdit" style = "position : absolute ; left : 120px;">修正</button>
+      <button type = "button" name = "btnBack" style = "position : absolute ; left : 170px;" onclick = "location.href = 'http://localhost:8080/address_book/ADR001.jsp'">戻る</button>
+      <button type = "submit" value = "btndelete" name = "btnDelete" onclick = "return confirm('削除しますか？')" style = "position : absolute ; left : 300px;">削除</button>
     </form>
   </body>
 </html>

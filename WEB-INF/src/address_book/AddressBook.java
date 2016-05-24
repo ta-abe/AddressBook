@@ -276,7 +276,7 @@ public class AddressBook {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
 			String sql = "UPDATE ADDRESS_BOOK SET NAME = ?, KANA = ?, ADDRESS = ?, MEMO = ?, UPDATED_DATETIME = CAST(NOW() AS DATETIME)  WHERE UUID = ?";
-			conn.setAutoCommit(true);
+			conn.setAutoCommit(false);
 			pst = conn.prepareStatement(sql);
 			pst.setString(1, name);
 			pst.setString(2, kana);
@@ -302,7 +302,7 @@ public class AddressBook {
 				pst3.executeUpdate();
 			}
 			int mailsize = mail.size();
-			if(false == "null".equals(mail.get(mailsize - 1))){
+			if(false == "null".equals(mail.get(mailsize - 1)) && false == "".equals(mail.get(mailsize - 1))){
 				String sql4 = "INSERT INTO MAIL_ADDRESS(UUID, BOOK_UUID, SORT_ORDER, MAIL_ADDRESS, REGISTERED_DATETIME) VALUES(?, ?, ?, ?, CAST(NOW() AS DATETIME))";
 				pst4 = conn.prepareStatement(sql4);
 				String newuuid =  java.util.UUID.randomUUID().toString();
@@ -330,7 +330,7 @@ public class AddressBook {
 				pst6.executeUpdate();
 			}
 			int phonesize = phone.size();
-			if(false == "null".equals(phone.get(phonesize - 1))){
+			if(false == "null".equals(phone.get(phonesize - 1)) && false == "".equals(phone.get(phonesize - 1)) ){
 				String sql7 = "INSERT INTO PHONE_NUMBER(UUID, BOOK_UUID, SORT_ORDER, PHONE_NUMBER, REGISTERED_DATETIME) VALUES(?, ?, ?, ?, CAST(NOW() AS DATETIME))";
 				pst7 = conn.prepareStatement(sql7);
 				String newuuid =  java.util.UUID.randomUUID().toString();
@@ -357,12 +357,16 @@ public class AddressBook {
 			pst.close();
 			pst2.close();
 			pst3.close();
-			pst4.close();
 			pst5.close();
 			pst6.close();
-			pst7.close();
 			rs.close();
 			rs2.close();
+			if(null != pst4){
+				pst4.close();
+			}
+			if(null != pst7){
+				pst7.close();
+			}
 		}
 	}
 
