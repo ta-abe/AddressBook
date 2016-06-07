@@ -87,7 +87,9 @@ public class AddressBookServlet extends HttpServlet{
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 *
+	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse res){
 		try {
 			req.setCharacterEncoding("UTF-8");
@@ -233,7 +235,7 @@ public class AddressBookServlet extends HttpServlet{
 	}
 
 	/**
-	 *
+	 * 入力からパラメータを受け取り、要素の更新を行う
 	 * @param address
 	 * @throws SQLException
 	 */
@@ -241,8 +243,9 @@ public class AddressBookServlet extends HttpServlet{
 		AddressBook addressbook = new AddressBook();
 		addressbook.update(address);
 		}
+
 	/**
-	 *
+	 * UUIDを受け取り、その要素を削除する
 	 * @param uuid
 	 * @throws SQLException
 	 */

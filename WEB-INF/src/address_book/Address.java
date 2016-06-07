@@ -18,7 +18,7 @@ public class Address {
 	private String memo = null;
 
 	/**
-	 *
+	 * 要素を受け取りフィールドにセットする
 	 * @param uuid
 	 * @param name
 	 * @param kana
@@ -38,7 +38,7 @@ public class Address {
 	}
 
 	/**
-	 *
+	 *要素を受け取りフィールドにセットする
 	 * @param name
 	 * @param kana
 	 * @param address
@@ -64,26 +64,50 @@ public class Address {
 		return uuid;
 	}
 
+	/**
+	 *
+	 * @return setされた名前を返す
+	 */
 	public String getName(){
 		return name;
 	}
 
+	/**
+	 *
+	 * @return setされたかなを返す
+	 */
 	public String getKana(){
 		return kana;
 	}
 
+	/**
+	 *
+	 * @return setされたメールアドレスのリストを返す
+	 */
 	public List<String> getMailAddressList(){
 		return mailAddressList;
 	}
 
+	/**
+	 *
+	 * @return setされた電話番号のリストを返す
+	 */
 	public List<String> getPhoneNumberList(){
 		return phoneNumberList;
 	}
 
+	/**
+	 *
+	 * @return setされた住所を返す
+	 */
 	public String getAddress(){
 		return address;
 	}
 
+	/**
+	 *
+	 * @return setされたメモを返す
+	 */
 	public String getMemo(){
 		return memo;
 	}

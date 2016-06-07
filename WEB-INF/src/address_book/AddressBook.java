@@ -222,7 +222,7 @@ public class AddressBook {
 	}
 
 	/**
-	 * 引数に指定したUUIDに対応する要素を取得しAddressクラスのオブジェクトに
+	 * 引数に指定したUUIDに対応する要素を取得しAddressクラスのオブジェクトにして返す
 	 * して返す
 	 * @param uuid
 	 * @return Address
@@ -274,6 +274,12 @@ public class AddressBook {
 
 	}
 
+	/**
+	 * 入力された値のAddressオブジェクトを受け取り、要素を登録する
+	 * @param address
+	 * @return
+	 * @throws SQLException
+	 */
 	public Address add(Address address) throws SQLException{
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -345,6 +351,11 @@ public class AddressBook {
 		return null;
 	}
 
+	/**
+	 * 更新したい要素のAddressオブジェクトを受け取り、要素を更新する
+	 * @param address
+	 * @throws SQLException
+	 */
 	public void update(Address address) throws SQLException {
 		String uuid = address.getUuid();
 		String name = address.getName();
@@ -479,6 +490,11 @@ public class AddressBook {
 		}
 	}
 
+	/**
+	 * 削除したい要素のUUIDを受け取り、その要素を削除する
+	 * @param uuid
+	 * @throws SQLException
+	 */
 	public void delete(String uuid) throws SQLException{
 		Connection conn = null;
 		PreparedStatement pst = null;
