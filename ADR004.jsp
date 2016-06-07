@@ -27,9 +27,9 @@
         int t = Integer.parseInt(phonesize.toString());
         for(int i = 0 ; i < t; i++){
       %>
-      <input type = "text" value = "<%=request.getAttribute("PHONE" + i)%>" name = "txtPhoneNumber<%= + i %>" pattern = "[0-9\(\)\-]+$" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
+      <input type = "text" value = "<%=request.getAttribute("PHONE" + i)%>" name = "txtPhoneNumber<%= + i %>" pattern = "\(?\d{2,4}\)?-?\(?\d{3,4}\)?-?\(?\d{3,4}\)?" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
       <%} %>
-      <input type = "text" value = "" name = "txtPhoneNumber<%= + t %>" pattern = "[0-9\(\)\-]+$" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
+      <input type = "text" value = "" name = "txtPhoneNumber<%= + t %>" pattern = "\(?\d{2,4}\)?-?\(?\d{3,4}\)?-?\(?\d{3,4}\)?" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
       住所
       <input type = "text" value = "<%=request.getAttribute("ADDRESS")%>" name = "txtAddress" maxlength = "200"  size = "70" style = "position : absolute ; left : 120px;"><BR><BR>
       メモ

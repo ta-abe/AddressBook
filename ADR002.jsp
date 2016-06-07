@@ -14,9 +14,9 @@
       <input type = "text" value = "" name = "txtMailAddress2" pattern = "^([a-z0-9A-Z\.\-])+@([a-z0-9A-Z\.\-])+$" maxlength = "256" size = "50" style = "position : absolute ; left : 120px;"><BR><BR>
       <input type = "text" value = "" name = "txtMailAddress3" pattern = "^([a-z0-9A-Z\.\-])+@([a-z0-9A-Z\.\-])+$" maxlength = "256" size = "50" style = "position : absolute ; left : 120px;"><BR><BR>
       電話番号
-      <input type = "text" value = "" name = "txtPhoneNumber1" pattern = "[0-9\(\)\-]+$" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
-      <input type = "text" value = "" name = "txtPhoneNumber2" pattern = "[0-9\(\)\-]+$" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
-      <input type = "text" value = "" name = "txtPhoneNumber3" pattern = "[0-9\(\)\-]+$" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
+      <input type = "text" value = "" name = "txtPhoneNumber1" pattern = "\(?\d{2,4}\)?-?\(?\d{3,4}\)?-?\(?\d{3,4}\)?" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
+      <input type = "text" value = "" name = "txtPhoneNumber2" pattern = "\(?\d{2,4}\)?-?\(?\d{3,4}\)?-?\(?\d{3,4}\)?" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
+      <input type = "text" value = "" name = "txtPhoneNumber3" pattern = "\(?\d{2,4}\)?-?\(?\d{3,4}\)?-?\(?\d{3,4}\)?" maxlength = "20" style = "position : absolute ; left : 120px;"><BR><BR>
       住所
       <input type = "text" value = "" name = "txtAddress" maxlength = "200" size = "70" style = "position : absolute ; left : 120px;"><BR><BR>
       メモ

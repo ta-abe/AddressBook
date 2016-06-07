@@ -11,10 +11,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ *
+ * @author excite
+ *
+ */
 public class AddressBookServlet extends HttpServlet{
 
 	private long selialVersionUID;
 
+	/**
+	 *
+	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse res){
 		try {
 			if("003Back".equals(req.getParameter("btnBack"))){  //ADR004からADR003へ遷移
@@ -208,16 +216,36 @@ public class AddressBookServlet extends HttpServlet{
 		}
 	}
 
+	/**
+	 * 入力からパラメータを受け取って要素を新規登録する
+	 * @param name 名前
+	 * @param kana かな
+	 * @param mailAddressList メールアドレスが格納されたリスト
+	 * @param phoneNumberList 電話番号が格納されたリスト
+	 * @param address 住所
+	 * @param memo メモ
+	 * @throws SQLException
+	 */
 	private void registerAddress(String name, String kana, List<String> mailAddressList, List<String> phoneNumberList, String address, String memo)throws SQLException{
 		Address address2 = new Address(name, kana, address, memo, mailAddressList, phoneNumberList);
 		AddressBook addressbook = new AddressBook();
 		addressbook.add(address2);
 	}
 
+	/**
+	 *
+	 * @param address
+	 * @throws SQLException
+	 */
 	private void updateAddress(Address address) throws SQLException{
 		AddressBook addressbook = new AddressBook();
 		addressbook.update(address);
 		}
+	/**
+	 *
+	 * @param uuid
+	 * @throws SQLException
+	 */
 	private void deleteAddress(String uuid) throws SQLException{
 		AddressBook addressbook = new AddressBook();
 		addressbook.delete(uuid);

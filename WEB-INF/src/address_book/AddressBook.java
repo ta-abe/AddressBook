@@ -32,38 +32,81 @@ public class AddressBook {
 	private String dbUser = "root";
 	private String dbPassword = "8121";
 
+	/**
+	 * 引数のResultSetからAddressクラスのオブジェクトを作成し
+	 * それをListに入れて返却する
+	 * @param conn
+	 * @param rs
+	 * @return AddressのListを返す
+	 * @throws SQLException
+	 */
 	private  List<Address> ToList(Connection conn, ResultSet rs) throws SQLException{
 		List<Address> array = new ArrayList<Address>();
 		List<String> mailaddresslist = new ArrayList<String>();
 		List<String> phonenumberlist = new ArrayList<String>();
-		while(rs.next()){
-			UUID = rs.getString("ADDRESS_BOOK.UUID");
-			NAME = rs.getString("ADDRESS_BOOK.NAME");
-			KANA = rs.getString("ADDRESS_BOOK.KANA");
-			ADDRESS = rs.getString("ADDRESS_BOOK.ADDRESS");
-			MEMO = rs.getString("ADDRESS_BOOK.MEMO");
-			REGISTERED_DATETIME = rs.getString("ADDRESS_BOOK.REGISTERED_DATETIME");
-			UPDATED_DATETIME = rs.getString("ADDRESS_BOOK.UPDATED_DATETIME");
-			MA_UUID = rs.getString("MAIL_ADDRESS.UUID");
-			MA_BOOK_UUID = rs.getString("MAIL_ADDRESS.BOOK_UUID");
-			MA_SORT_ORDER = rs.getString("MAIL_ADDRESS.SORT_ORDER");
-			MA_MAIL_ADDRESS = rs.getString("MAIL_ADDRESS.MAIL_ADDRESS");
-			MA_REGISTERED_DATETIME = rs.getString("MAIL_ADDRESS.REGISTERED_DATETIME");
-			MA_UPDATED_DATETIME = rs.getString("MAIL_ADDRESS.UPDATED_DATETIME");
-			PN_UUID = rs.getString("PHONE_NUMBER.UUID");
-			PN_BOOK_UUID = rs.getString("PHONE_NUMBER.BOOK_UUID");
-			PN_SORT_ORDER = rs.getString("PHONE_NUMBER.SORT_ORDER");
-			PN_PHONE_NUMBER = rs.getString("PHONE_NUMBER.PHONE_NUMBER");
-			PN_REGISTERED_DATETIME = rs.getString("PHONE_NUMBER.REGISTERED_DATETIME");
-			PN_UPDATED_DATETIME = rs.getString("PHONE_NUMBER.UPDATED_DATETIME");
-			mailaddresslist.add(MA_MAIL_ADDRESS);
-			phonenumberlist.add(PN_PHONE_NUMBER);
-			Address address = new Address(UUID, NAME, KANA, ADDRESS, MEMO, mailaddresslist, phonenumberlist);
-			array.add(address);
+		PreparedStatement pst = null;
+		PreparedStatement pst2 = null;
+		ResultSet rs2 = null;
+		try {
+			while(rs.next()){
+				UUID = rs.getString("ADDRESS_BOOK.UUID");
+				NAME = rs.getString("ADDRESS_BOOK.NAME");
+				KANA = rs.getString("ADDRESS_BOOK.KANA");
+				ADDRESS = rs.getString("ADDRESS_BOOK.ADDRESS");
+				MEMO = rs.getString("ADDRESS_BOOK.MEMO");
+				REGISTERED_DATETIME = rs.getString("ADDRESS_BOOK.REGISTERED_DATETIME");
+				UPDATED_DATETIME = rs.getString("ADDRESS_BOOK.UPDATED_DATETIME");
+
+				String sql = "SELECT * FROM MAIL_ADDRESS WHERE MAIL_ADDRESS.BOOK_UUID = ? ORDER BY MAIL_ADDRESS.SORT_ORDER ASC";
+				pst = conn.prepareStatement(sql);
+				pst.setString(1, UUID);
+				rs2 = pst.executeQuery();
+				MA_MAIL_ADDRESS = "";
+				if(true == rs2.next()){
+					MA_MAIL_ADDRESS = rs2.getString("MAIL_ADDRESS");
+				}
+				rs2.close();
+
+				sql = "SELECT * FROM PHONE_NUMBER WHERE PHONE_NUMBER.BOOK_UUID = ? ORDER BY PHONE_NUMBER.SORT_ORDER ASC";
+				pst2 = conn.prepareStatement(sql);
+				pst2.setString(1, UUID);
+				rs2 = pst2.executeQuery();
+				PN_PHONE_NUMBER = "";
+				if(true == rs2.next()){
+					PN_PHONE_NUMBER = rs2.getString("PHONE_NUMBER");
+				}
+				rs2.close();
+
+				mailaddresslist.add(MA_MAIL_ADDRESS);
+				phonenumberlist.add(PN_PHONE_NUMBER);
+				Address address = new Address(UUID, NAME, KANA, ADDRESS, MEMO, mailaddresslist, phonenumberlist);
+				array.add(address);
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if(pst != null){
+				pst.close();
+			}
+			if(pst2 != null){
+				pst2.close();
+			}
+			if(rs2 != null){
+				rs2.close();
+			}
 		}
 		return array;
 	}
 
+	/**
+	 * 登録されているすべての要素をListに入れて返す
+	 * @return Addressクラスのオブジェクトが格納されたList
+	 * @throws SQLException
+	 */
 	public  List<Address> getAll() throws SQLException{
 
 		Connection conn = null;
@@ -73,7 +116,7 @@ public class AddressBook {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-			String sql = "SELECT * FROM ADDRESS_BOOK LEFT JOIN MAIL_ADDRESS ON ADDRESS_BOOK.UUID = MAIL_ADDRESS.BOOK_UUID LEFT JOIN PHONE_NUMBER ON ADDRESS_BOOK.UUID =  PHONE_NUMBER.BOOK_UUID HAVING MAIL_ADDRESS.SORT_ORDER = 1  AND PHONE_NUMBER.SORT_ORDER = 1 ORDER BY ADDRESS_BOOK.REGISTERED_DATETIME DESC";
+			String sql = "SELECT * FROM ADDRESS_BOOK ORDER BY REGISTERED_DATETIME DESC";
 			pst = conn.prepareStatement(sql);
 			rs = pst.executeQuery();
 			address = ToList(conn, rs);
@@ -88,13 +131,26 @@ public class AddressBook {
 		}
 		finally
 		{
-			pst.close();
-			rs.close();
-			conn.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(rs != null){
+				rs.close();
+			}
+			if(conn != null){
+				conn.close();
+			}
 		}
 		return address;
 	}
 
+	/**
+	 * 引数のResultSetからメールアドレスのListを作成する
+	 * @param conn
+	 * @param rs
+	 * @return メールアドレスが格納されたList
+	 * @throws SQLException
+	 */
 	private List<String> getMailAddressList(Connection conn, ResultSet rs) throws SQLException{
 		List<String> mailAddressList = new ArrayList<String>();
 		PreparedStatement pst = null;
@@ -116,12 +172,23 @@ public class AddressBook {
 		}
 		finally
 		{
-			pst.close();
-			rs2.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(rs2 != null){
+				rs2.close();
+			}
 		}
 		return mailAddressList;
 	}
 
+	/**
+	 * 引数のResultSetから電話番号のListを作成する
+	 * @param conn
+	 * @param rs
+	 * @return 電話番号が格納されたList
+	 * @throws SQLException
+	 */
 	private List<String> getPhoneNumberList(Connection conn, ResultSet rs) throws SQLException{
 		List<String> phoneNumberList = new ArrayList<String>();
 		PreparedStatement pst = null;
@@ -143,13 +210,24 @@ public class AddressBook {
 		}
 		finally
 		{
-			pst.close();
-			rs2.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(rs2 != null){
+				rs2.close();
+			}
 		}
 
 		return phoneNumberList;
 	}
 
+	/**
+	 * 引数に指定したUUIDに対応する要素を取得しAddressクラスのオブジェクトに
+	 * して返す
+	 * @param uuid
+	 * @return Address
+	 * @throws SQLException
+	 */
 	public Address get(String uuid) throws SQLException{
 		Address address = null;
 		Connection conn = null;
@@ -182,9 +260,15 @@ public class AddressBook {
 		}
 		finally
 		{
-			pst.close();
-			rs.close();
-			conn.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(rs != null){
+				rs.close();
+			}
+			if(conn != null){
+				conn.close();
+			}
 		}
 		return address;
 
@@ -245,10 +329,18 @@ public class AddressBook {
 		}
 		finally
 		{
-			pst.close();
-			pst2.close();
-			pst3.close();
-			conn.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(pst2 != null){
+				pst2.close();
+			}
+			if(pst3 != null){
+				pst3.close();
+			}
+			if(conn != null){
+				conn.close();
+			}
 		}
 		return null;
 	}
@@ -353,20 +445,37 @@ public class AddressBook {
 		}
 		finally
 		{
-			conn.close();
-			pst.close();
-			pst2.close();
-			pst3.close();
-			pst5.close();
-			pst6.close();
-			rs.close();
-			rs2.close();
-			if(null != pst4){
+			if(conn != null){
+				conn.close();
+			}
+			if(pst != null){
+				pst.close();
+			}
+			if(pst2 != null){
+				pst2.close();
+			}
+			if(pst3 != null){
+				pst3.close();
+			}
+			if(pst4 != null){
 				pst4.close();
 			}
-			if(null != pst7){
+			if(pst5 != null){
+				pst5.close();
+			}
+			if(pst6 != null){
+				pst6.close();
+			}
+			if(pst7 != null){
 				pst7.close();
 			}
+			if(rs != null){
+				rs.close();
+			}
+			if(rs2 != null){
+				rs2.close();
+			}
+
 		}
 	}
 
@@ -406,10 +515,18 @@ public class AddressBook {
 			conn.rollback();
 		}
 		finally{
-			pst.close();
-			pst2.cancel();
-			pst3.close();
-			conn.close();
+			if(pst != null){
+				pst.close();
+			}
+			if(pst2 != null){
+				pst2.cancel();
+			}
+			if(pst3 != null){
+				pst3.close();
+			}
+			if(conn != null){
+				conn.close();
+			}
 		}
 	}
  }

@@ -3,6 +3,11 @@ package address_book;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author excite
+ *
+ */
 public class Address {
 	private String uuid = null;
 	private String name = null;
@@ -12,6 +17,16 @@ public class Address {
 	private String address = null;
 	private String memo = null;
 
+	/**
+	 *
+	 * @param uuid
+	 * @param name
+	 * @param kana
+	 * @param address
+	 * @param memo
+	 * @param mailAddressList
+	 * @param phoneNumberList
+	 */
 	Address(String uuid, String name, String kana, String address, String memo, List<String> mailAddressList, List<String> phoneNumberList){
 		this.uuid = uuid;
 		this.name = name;
@@ -22,6 +37,15 @@ public class Address {
 		this.phoneNumberList = phoneNumberList;
 	}
 
+	/**
+	 *
+	 * @param name
+	 * @param kana
+	 * @param address
+	 * @param memo
+	 * @param mailAddressList
+	 * @param phoneNumberList
+	 */
 	Address(String name, String kana,String address,String memo,List<String> mailAddressList,List<String> phoneNumberList){
 		this.uuid = java.util.UUID.randomUUID().toString();
 		this.name = name;
@@ -32,6 +56,10 @@ public class Address {
 		this.phoneNumberList = phoneNumberList;
 	}
 
+	/**
+	 *
+	 * @return setされたUUIDを返す
+	 */
 	public String getUuid(){
 		return uuid;
 	}

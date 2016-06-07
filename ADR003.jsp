@@ -17,13 +17,13 @@
         int j = Integer.parseInt(size.toString());
         for(int i = 0; i < j ; i++){ %>
           <label name = "lblMailAddress" style = "position : absolute ; left : 120px;"><%=request.getAttribute("MAIL" + i)%></label><BR><BR>
-      <%}%>
+      <%}%><BR><BR>
       電話番号
       <%Object psize = request.getAttribute("phonesize");
         int k = Integer.parseInt(psize.toString());
         for(int l = 0; l < k ; l++){ %>
           <label name = "lblPhoneNumber" style = "position : absolute ; left : 120px;"><%=request.getAttribute("PHONE" + l)%></label><BR><BR>
-      <%}%>
+      <%}%><BR><BR>
       住所
       <label name = "lblAddress" style = "position : absolute ; left : 120px;"><%=request.getAttribute("ADDRESS")%></label><BR><BR>
       メモ
